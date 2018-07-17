@@ -1,0 +1,17 @@
+algoritmo inerr6;
+
+variáveis
+	x	: inteiro;
+fim-variáveis
+
+início
+
+	x := 1;
+	se x = 1 então
+		x := verdadeiro; // x é inteiro não pode receber verdadeiro
+	senão
+		x := 6;
+	
+	escreva(x);
+fim
+

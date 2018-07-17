@@ -1,0 +1,15 @@
+algoritmo in4;
+
+variáveis
+	z	: real;
+fim-variáveis
+
+início
+	z := maximo(1.0, 1.4);
+	escreva_ln(z);
+	z := media(1.0, 1.4);
+	escreva_ln(z);
+	z := minimo(1.0, 1.4);
+	escreva_ln(z);
+fim
+

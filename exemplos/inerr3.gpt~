@@ -1,0 +1,17 @@
+algoritmo in3;
+
+variáveis
+	x	: inteiro;
+	  : real; // falta variável
+fim-variáveis
+
+início
+	x := 0;
+	y := 1.1; 
+	
+	para x de 0 até 9 faça
+		y := 1.1 * 2;
+		
+	escreva(y);
+fim
+

@@ -1,0 +1,17 @@
+algoritmo in5;
+
+variáveis
+	x	: inteiro;
+fim-variáveis
+
+início
+	x := 4;	
+	enquanto verdadeiro faça{
+		x := x + 1;
+		se x = 8 então
+			brecar;		
+	}
+fim
+		
+
+

@@ -1,0 +1,19 @@
+algoritmo inerr10;
+
+função fazNada (x: inteiro) : lógico
+início
+	retorne falso;
+fim
+
+
+variáveis
+	y	: inteiro;
+	z   : lógico;
+fim-variáveis
+
+início
+	y := 0;
+	z := avalia (y,z);// Função não declarada
+	escreva(z);
+fim
+

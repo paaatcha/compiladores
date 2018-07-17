@@ -1,0 +1,20 @@
+algoritmo in2;
+
+variáveis
+	x	: inteiro;
+fim-variáveis
+
+início
+	escreva_ln("Digite um valor inteiro para ser comparado com 3");
+	leia(x);
+	
+	escreva("O valor de x lido foi: ");
+	escreva_ln(x);
+	
+	se x = 3 então
+		escreva(x);
+	senão
+		escreva("a");
+
+fim
+

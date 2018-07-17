@@ -1,0 +1,3316 @@
+Terminais não utilizados na gramática
+
+   FIM_PARA
+   FIM_ENQUANTO
+   FIM_SE
+   PASSO
+   CONST_LITERAL
+   PONTO
+
+
+Gramática
+
+    0 $accept: programa $end
+
+    1 $@1: /* vazio */
+
+    2 programa: ALGORITMO IDENT $@1 PTO_E_VIRG bloco_dec_func bloco_dec_var INICIO bloco_cmd FIM
+
+    3 bloco_dec_var: /* vazio */
+
+    4 $@2: /* vazio */
+
+    5 bloco_dec_var: VARIAVEIS $@2 list_dec_var FIM_VARIAVEIS
+
+    6 list_dec_var_locais: /* vazio */
+    7                    | list_dec_var
+
+    8 list_dec_var: dec_var
+    9             | dec_var list_dec_var
+
+   10 dec_var: list_ident DOIS_PONTOS tipo_dado PTO_E_VIRG
+   11        | list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+   12        | list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+
+   13 bloco_dec_func: /* vazio */
+   14               | list_dec_func
+
+   15 list_dec_func: dec_func
+   16              | dec_func list_dec_func
+
+   17 $@3: /* vazio */
+
+   18 $@4: /* vazio */
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd FIM
+
+   20 list_arg_dec_func: arg_dec_func
+   21                  | arg_dec_func VIRGULA list_arg_dec_func
+
+   22 arg_dec_func: /* vazio */
+   23             | IDENT DOIS_PONTOS tipo_dado
+
+   24 list_ident: IDENT
+
+   25 $@5: /* vazio */
+
+   26 list_ident: IDENT $@5 VIRGULA list_ident
+
+   27 tipo_dado: INTEIRO
+   28          | REAL
+   29          | CARACTERE
+   30          | LITERAL
+   31          | LOGICO
+
+   32 tipo_dado_mat: INTEIROS
+   33              | REAIS
+   34              | CARACTERES
+   35              | LITERAIS
+   36              | LOGICOS
+
+   37 tipo_ret: VAZIO
+   38         | tipo_dado
+
+   39 bloco_cmd: /* vazio */
+   40          | list_cmd
+
+   41 list_cmd: cmd
+   42         | cmd list_cmd
+
+   43 exp: exp_atrib
+   44    | exp VIRGULA exp_atrib
+
+   45 exp_atrib: exp_or
+
+   46 $@6: /* vazio */
+
+   47 exp_atrib: exp_atrib $@6 ATRIB_OP exp_or
+
+   48 exp_or: exp_and
+   49       | exp_or OU_OP exp_and
+
+   50 exp_and: exp_igual
+   51        | exp_and E_OP exp_igual
+
+   52 exp_igual: exp_rel
+   53          | exp_igual IGUAL_OP exp_rel
+   54          | exp_igual DIF_OP exp_rel
+
+   55 exp_rel: exp_adit
+   56        | exp_rel MAIOR_OP exp_adit
+   57        | exp_rel MENOR_OP exp_adit
+   58        | exp_rel GE_OP exp_adit
+   59        | exp_rel LE_OP exp_adit
+
+   60 exp_adit: exp_mult
+   61         | exp_adit MAIS_OP exp_mult
+   62         | exp_adit MENOS_OP exp_mult
+
+   63 exp_mult: exp_un
+   64         | exp_mult MULTI_OP exp_un
+   65         | exp_mult DIV_OP exp_un
+   66         | exp_mult MOD_OP exp_un
+
+   67 exp_un: oper_unario exp_prim
+   68       | exp_prim
+
+   69 oper_unario: MENOS_OP
+   70            | NAO_OP
+   71            | XOR_BIT_OP
+   72            | AND_BIT_OP
+   73            | OR_BIT_OP
+   74            | NOT_BIT_OP
+
+   75 exp_prim: exp_prim_pura
+   76         | func
+
+   77 exp_prim_pura: IDENT
+   78              | CONST_INTEIRO
+   79              | CONST_REAL
+   80              | LITERAL
+   81              | CONST_CARACTERE
+   82              | ABRE_PARENT exp FECHA_PARENT
+   83              | VERDADEIRO
+   84              | FALSO
+
+   85 list_arg_chama_func: exp_prim_pura
+
+   86 $@7: /* vazio */
+
+   87 list_arg_chama_func: exp_prim_pura VIRGULA $@7 list_arg_chama_func
+
+   88 $@8: /* vazio */
+
+   89 func: IDENT $@8 chamada_func
+
+   90 chamada_func: ABRE_PARENT list_arg_chama_func FECHA_PARENT
+   91             | ABRE_PARENT FECHA_PARENT
+
+   92 cmd_ret: RETORNE PTO_E_VIRG
+
+   93 $@9: /* vazio */
+
+   94 cmd_ret: RETORNE exp $@9 PTO_E_VIRG
+
+   95 cmd_brec: BRECAR PTO_E_VIRG
+
+   96 cmd_exp: exp PTO_E_VIRG
+
+   97 cmd: cmd_ass
+   98    | cmd_n_ass
+
+   99 cmd_n_ass: SE exp ENTAO cmd_ass
+
+  100 cmd_se: SE exp ENTAO cmd_ass SENAO cmd_ass
+
+  101 cmd_enquanto: ENQUANTO exp FACA cmd_ass
+
+  102 cmd_para: PARA exp DE exp ATE exp FACA cmd_ass
+
+  103 cmd_fazer: FAZER cmd ENQUANTO exp PTO_E_VIRG
+
+  104 $@10: /* vazio */
+
+  105 cmd_chavear: CHAVEAR IDENT $@10 ABRE_BLOCO lista_casos_chavear caso_padrao FECHA_BLOCO
+
+  106 lista_casos_chavear: caso_chavear
+  107                    | caso_chavear lista_casos_chavear
+
+  108 caso_chavear: CASO exp_prim DOIS_PONTOS bloco_cmd
+
+  109 caso_padrao: PADRAO DOIS_PONTOS bloco_cmd
+
+  110 cmd_ass: ABRE_BLOCO bloco_cmd FECHA_BLOCO
+  111        | cmd_se
+  112        | cmd_exp
+  113        | cmd_ret
+  114        | cmd_enquanto
+  115        | cmd_para
+  116        | cmd_chavear
+  117        | cmd_brec
+  118        | cmd_fazer
+
+
+Terminais, com as regras onde eles aparecem
+
+$end (0) 0
+error (256)
+FIM_VARIAVEIS (258) 5
+CARACTERE (259) 29
+SE (260) 99 100
+FACA (261) 101 102
+FIM_PARA (262)
+LITERAIS (263) 35
+ALGORITMO (264) 2
+LITERAL (265) 30 80
+FIM (266) 2 19
+SENAO (267) 100
+FIM_ENQUANTO (268)
+MATRIZ (269) 11 12
+LOGICOS (270) 36
+VARIAVEIS (271) 5
+LOGICO (272) 31
+ENTAO (273) 99 100
+PARA (274) 102
+INTEIROS (275) 32
+FUNCAO (276) 19
+INTEIRO (277) 27
+INICIO (278) 2 19
+FIM_SE (279)
+DE (280) 11 12 102
+REAIS (281) 33
+RETORNE (282) 92 94
+REAL (283) 28
+ENQUANTO (284) 101 103
+ATE (285) 102
+CARACTERES (286) 34
+PASSO (287)
+VAZIO (288) 37
+VERDADEIRO (289) 83
+FALSO (290) 84
+CONST_INTEIRO (291) 11 12 78
+CONST_REAL (292) 79
+CONST_LITERAL (293)
+CONST_CARACTERE (294) 81
+ATRIB_OP (295) 47
+MENOS_OP (296) 62 69
+MAIS_OP (297) 61
+MULTI_OP (298) 64
+DIV_OP (299) 65
+MOD_OP (300) 66
+LE_OP (301) 59
+GE_OP (302) 58
+IGUAL_OP (303) 53
+DIF_OP (304) 54
+MENOR_OP (305) 57
+MAIOR_OP (306) 56
+XOR_BIT_OP (307) 71
+NOT_BIT_OP (308) 74
+AND_BIT_OP (309) 72
+OR_BIT_OP (310) 73
+NAO_OP (311) 70
+OU_OP (312) 49
+E_OP (313) 51
+PTO_E_VIRG (314) 2 10 11 12 92 94 95 96 103
+ABRE_BLOCO (315) 105 110
+FECHA_BLOCO (316) 105 110
+VIRGULA (317) 21 26 44 87
+DOIS_PONTOS (318) 10 11 12 19 23 108 109
+ABRE_PARENT (319) 19 82 90 91
+FECHA_PARENT (320) 19 82 90 91
+ABRE_COLCHE (321) 11 12
+FECHA_COLCHE (322) 11 12
+PONTO (323)
+IDENT (324) 2 19 23 24 26 77 89 105
+CHAVEAR (325) 105
+CASO (326) 108
+BRECAR (327) 95
+PADRAO (328) 109
+FAZER (329) 103
+
+
+Não-terminais com as regras onde eles aparecem
+
+$accept (75)
+    à esquerda: 0
+programa (76)
+    à esquerda: 2, à direita: 0
+$@1 (77)
+    à esquerda: 1, à direita: 2
+bloco_dec_var (78)
+    à esquerda: 3 5, à direita: 2
+$@2 (79)
+    à esquerda: 4, à direita: 5
+list_dec_var_locais (80)
+    à esquerda: 6 7, à direita: 19
+list_dec_var (81)
+    à esquerda: 8 9, à direita: 5 7 9
+dec_var (82)
+    à esquerda: 10 11 12, à direita: 8 9
+bloco_dec_func (83)
+    à esquerda: 13 14, à direita: 2
+list_dec_func (84)
+    à esquerda: 15 16, à direita: 14 16
+dec_func (85)
+    à esquerda: 19, à direita: 15 16
+$@3 (86)
+    à esquerda: 17, à direita: 19
+$@4 (87)
+    à esquerda: 18, à direita: 19
+list_arg_dec_func (88)
+    à esquerda: 20 21, à direita: 19 21
+arg_dec_func (89)
+    à esquerda: 22 23, à direita: 20 21
+list_ident (90)
+    à esquerda: 24 26, à direita: 10 11 12 26
+$@5 (91)
+    à esquerda: 25, à direita: 26
+tipo_dado (92)
+    à esquerda: 27 28 29 30 31, à direita: 10 23 38
+tipo_dado_mat (93)
+    à esquerda: 32 33 34 35 36, à direita: 11 12
+tipo_ret (94)
+    à esquerda: 37 38, à direita: 19
+bloco_cmd (95)
+    à esquerda: 39 40, à direita: 2 19 108 109 110
+list_cmd (96)
+    à esquerda: 41 42, à direita: 40 42
+exp (97)
+    à esquerda: 43 44, à direita: 44 82 94 96 99 100 101 102 103
+exp_atrib (98)
+    à esquerda: 45 47, à direita: 43 44 47
+$@6 (99)
+    à esquerda: 46, à direita: 47
+exp_or (100)
+    à esquerda: 48 49, à direita: 45 47 49
+exp_and (101)
+    à esquerda: 50 51, à direita: 48 49 51
+exp_igual (102)
+    à esquerda: 52 53 54, à direita: 50 51 53 54
+exp_rel (103)
+    à esquerda: 55 56 57 58 59, à direita: 52 53 54 56 57 58 59
+exp_adit (104)
+    à esquerda: 60 61 62, à direita: 55 56 57 58 59 61 62
+exp_mult (105)
+    à esquerda: 63 64 65 66, à direita: 60 61 62 64 65 66
+exp_un (106)
+    à esquerda: 67 68, à direita: 63 64 65 66
+oper_unario (107)
+    à esquerda: 69 70 71 72 73 74, à direita: 67
+exp_prim (108)
+    à esquerda: 75 76, à direita: 67 68 108
+exp_prim_pura (109)
+    à esquerda: 77 78 79 80 81 82 83 84, à direita: 75 85 87
+list_arg_chama_func (110)
+    à esquerda: 85 87, à direita: 87 90
+$@7 (111)
+    à esquerda: 86, à direita: 87
+func (112)
+    à esquerda: 89, à direita: 76
+$@8 (113)
+    à esquerda: 88, à direita: 89
+chamada_func (114)
+    à esquerda: 90 91, à direita: 89
+cmd_ret (115)
+    à esquerda: 92 94, à direita: 113
+$@9 (116)
+    à esquerda: 93, à direita: 94
+cmd_brec (117)
+    à esquerda: 95, à direita: 117
+cmd_exp (118)
+    à esquerda: 96, à direita: 112
+cmd (119)
+    à esquerda: 97 98, à direita: 41 42 103
+cmd_n_ass (120)
+    à esquerda: 99, à direita: 98
+cmd_se (121)
+    à esquerda: 100, à direita: 111
+cmd_enquanto (122)
+    à esquerda: 101, à direita: 114
+cmd_para (123)
+    à esquerda: 102, à direita: 115
+cmd_fazer (124)
+    à esquerda: 103, à direita: 118
+cmd_chavear (125)
+    à esquerda: 105, à direita: 116
+$@10 (126)
+    à esquerda: 104, à direita: 105
+lista_casos_chavear (127)
+    à esquerda: 106 107, à direita: 105 107
+caso_chavear (128)
+    à esquerda: 108, à direita: 106 107
+caso_padrao (129)
+    à esquerda: 109, à direita: 105
+cmd_ass (130)
+    à esquerda: 110 111 112 113 114 115 116 117 118, à direita: 97
+    99 100 101 102
+
+
+estado 0
+
+    0 $accept: . programa $end
+
+    ALGORITMO  deslocar, e ir ao estado 1
+
+    programa  ir ao estado 2
+
+
+estado 1
+
+    2 programa: ALGORITMO . IDENT $@1 PTO_E_VIRG bloco_dec_func bloco_dec_var INICIO bloco_cmd FIM
+
+    IDENT  deslocar, e ir ao estado 3
+
+
+estado 2
+
+    0 $accept: programa . $end
+
+    $end  deslocar, e ir ao estado 4
+
+
+estado 3
+
+    2 programa: ALGORITMO IDENT . $@1 PTO_E_VIRG bloco_dec_func bloco_dec_var INICIO bloco_cmd FIM
+
+    $padrão  reduzir usando a regra 1 ($@1)
+
+    $@1  ir ao estado 5
+
+
+estado 4
+
+    0 $accept: programa $end .
+
+    $padrão  aceitar
+
+
+estado 5
+
+    2 programa: ALGORITMO IDENT $@1 . PTO_E_VIRG bloco_dec_func bloco_dec_var INICIO bloco_cmd FIM
+
+    PTO_E_VIRG  deslocar, e ir ao estado 6
+
+
+estado 6
+
+    2 programa: ALGORITMO IDENT $@1 PTO_E_VIRG . bloco_dec_func bloco_dec_var INICIO bloco_cmd FIM
+
+    FUNCAO  deslocar, e ir ao estado 7
+
+    $padrão  reduzir usando a regra 13 (bloco_dec_func)
+
+    bloco_dec_func  ir ao estado 8
+    list_dec_func   ir ao estado 9
+    dec_func        ir ao estado 10
+
+
+estado 7
+
+   19 dec_func: FUNCAO . IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd FIM
+
+    IDENT  deslocar, e ir ao estado 11
+
+
+estado 8
+
+    2 programa: ALGORITMO IDENT $@1 PTO_E_VIRG bloco_dec_func . bloco_dec_var INICIO bloco_cmd FIM
+
+    VARIAVEIS  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 3 (bloco_dec_var)
+
+    bloco_dec_var  ir ao estado 13
+
+
+estado 9
+
+   14 bloco_dec_func: list_dec_func .
+
+    $padrão  reduzir usando a regra 14 (bloco_dec_func)
+
+
+estado 10
+
+   15 list_dec_func: dec_func .
+   16              | dec_func . list_dec_func
+
+    FUNCAO  deslocar, e ir ao estado 7
+
+    $padrão  reduzir usando a regra 15 (list_dec_func)
+
+    list_dec_func  ir ao estado 14
+    dec_func       ir ao estado 10
+
+
+estado 11
+
+   19 dec_func: FUNCAO IDENT . $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd FIM
+
+    $padrão  reduzir usando a regra 17 ($@3)
+
+    $@3  ir ao estado 15
+
+
+estado 12
+
+    5 bloco_dec_var: VARIAVEIS . $@2 list_dec_var FIM_VARIAVEIS
+
+    $padrão  reduzir usando a regra 4 ($@2)
+
+    $@2  ir ao estado 16
+
+
+estado 13
+
+    2 programa: ALGORITMO IDENT $@1 PTO_E_VIRG bloco_dec_func bloco_dec_var . INICIO bloco_cmd FIM
+
+    INICIO  deslocar, e ir ao estado 17
+
+
+estado 14
+
+   16 list_dec_func: dec_func list_dec_func .
+
+    $padrão  reduzir usando a regra 16 (list_dec_func)
+
+
+estado 15
+
+   19 dec_func: FUNCAO IDENT $@3 . ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd FIM
+
+    ABRE_PARENT  deslocar, e ir ao estado 18
+
+
+estado 16
+
+    5 bloco_dec_var: VARIAVEIS $@2 . list_dec_var FIM_VARIAVEIS
+
+    IDENT  deslocar, e ir ao estado 19
+
+    list_dec_var  ir ao estado 20
+    dec_var       ir ao estado 21
+    list_ident    ir ao estado 22
+
+
+estado 17
+
+    2 programa: ALGORITMO IDENT $@1 PTO_E_VIRG bloco_dec_func bloco_dec_var INICIO . bloco_cmd FIM
+
+    SE               deslocar, e ir ao estado 23
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    $padrão  reduzir usando a regra 39 (bloco_cmd)
+
+    bloco_cmd      ir ao estado 45
+    list_cmd       ir ao estado 46
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd            ir ao estado 63
+    cmd_n_ass      ir ao estado 64
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 70
+
+
+estado 18
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT . list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd FIM
+
+    IDENT  deslocar, e ir ao estado 71
+
+    $padrão  reduzir usando a regra 22 (arg_dec_func)
+
+    list_arg_dec_func  ir ao estado 72
+    arg_dec_func       ir ao estado 73
+
+
+estado 19
+
+   24 list_ident: IDENT .
+   26           | IDENT . $@5 VIRGULA list_ident
+
+    VIRGULA   reduzir usando a regra 25 ($@5)
+    $padrão  reduzir usando a regra 24 (list_ident)
+
+    $@5  ir ao estado 74
+
+
+estado 20
+
+    5 bloco_dec_var: VARIAVEIS $@2 list_dec_var . FIM_VARIAVEIS
+
+    FIM_VARIAVEIS  deslocar, e ir ao estado 75
+
+
+estado 21
+
+    8 list_dec_var: dec_var .
+    9             | dec_var . list_dec_var
+
+    IDENT  deslocar, e ir ao estado 19
+
+    $padrão  reduzir usando a regra 8 (list_dec_var)
+
+    list_dec_var  ir ao estado 76
+    dec_var       ir ao estado 21
+    list_ident    ir ao estado 22
+
+
+estado 22
+
+   10 dec_var: list_ident . DOIS_PONTOS tipo_dado PTO_E_VIRG
+   11        | list_ident . DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+   12        | list_ident . DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+
+    DOIS_PONTOS  deslocar, e ir ao estado 77
+
+
+estado 23
+
+   99 cmd_n_ass: SE . exp ENTAO cmd_ass
+  100 cmd_se: SE . exp ENTAO cmd_ass SENAO cmd_ass
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp            ir ao estado 78
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 24
+
+   80 exp_prim_pura: LITERAL .
+
+    $padrão  reduzir usando a regra 80 (exp_prim_pura)
+
+
+estado 25
+
+  102 cmd_para: PARA . exp DE exp ATE exp FACA cmd_ass
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp            ir ao estado 79
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 26
+
+   92 cmd_ret: RETORNE . PTO_E_VIRG
+   94        | RETORNE . exp $@9 PTO_E_VIRG
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    PTO_E_VIRG       deslocar, e ir ao estado 80
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp            ir ao estado 81
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 27
+
+  101 cmd_enquanto: ENQUANTO . exp FACA cmd_ass
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp            ir ao estado 82
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 28
+
+   83 exp_prim_pura: VERDADEIRO .
+
+    $padrão  reduzir usando a regra 83 (exp_prim_pura)
+
+
+estado 29
+
+   84 exp_prim_pura: FALSO .
+
+    $padrão  reduzir usando a regra 84 (exp_prim_pura)
+
+
+estado 30
+
+   78 exp_prim_pura: CONST_INTEIRO .
+
+    $padrão  reduzir usando a regra 78 (exp_prim_pura)
+
+
+estado 31
+
+   79 exp_prim_pura: CONST_REAL .
+
+    $padrão  reduzir usando a regra 79 (exp_prim_pura)
+
+
+estado 32
+
+   81 exp_prim_pura: CONST_CARACTERE .
+
+    $padrão  reduzir usando a regra 81 (exp_prim_pura)
+
+
+estado 33
+
+   69 oper_unario: MENOS_OP .
+
+    $padrão  reduzir usando a regra 69 (oper_unario)
+
+
+estado 34
+
+   71 oper_unario: XOR_BIT_OP .
+
+    $padrão  reduzir usando a regra 71 (oper_unario)
+
+
+estado 35
+
+   74 oper_unario: NOT_BIT_OP .
+
+    $padrão  reduzir usando a regra 74 (oper_unario)
+
+
+estado 36
+
+   72 oper_unario: AND_BIT_OP .
+
+    $padrão  reduzir usando a regra 72 (oper_unario)
+
+
+estado 37
+
+   73 oper_unario: OR_BIT_OP .
+
+    $padrão  reduzir usando a regra 73 (oper_unario)
+
+
+estado 38
+
+   70 oper_unario: NAO_OP .
+
+    $padrão  reduzir usando a regra 70 (oper_unario)
+
+
+estado 39
+
+  110 cmd_ass: ABRE_BLOCO . bloco_cmd FECHA_BLOCO
+
+    SE               deslocar, e ir ao estado 23
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    $padrão  reduzir usando a regra 39 (bloco_cmd)
+
+    bloco_cmd      ir ao estado 83
+    list_cmd       ir ao estado 46
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd            ir ao estado 63
+    cmd_n_ass      ir ao estado 64
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 70
+
+
+estado 40
+
+   82 exp_prim_pura: ABRE_PARENT . exp FECHA_PARENT
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp            ir ao estado 84
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 41
+
+   77 exp_prim_pura: IDENT .
+   89 func: IDENT . $@8 chamada_func
+
+    ABRE_PARENT  reduzir usando a regra 88 ($@8)
+    $padrão     reduzir usando a regra 77 (exp_prim_pura)
+
+    $@8  ir ao estado 85
+
+
+estado 42
+
+  105 cmd_chavear: CHAVEAR . IDENT $@10 ABRE_BLOCO lista_casos_chavear caso_padrao FECHA_BLOCO
+
+    IDENT  deslocar, e ir ao estado 86
+
+
+estado 43
+
+   95 cmd_brec: BRECAR . PTO_E_VIRG
+
+    PTO_E_VIRG  deslocar, e ir ao estado 87
+
+
+estado 44
+
+  103 cmd_fazer: FAZER . cmd ENQUANTO exp PTO_E_VIRG
+
+    SE               deslocar, e ir ao estado 23
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd            ir ao estado 88
+    cmd_n_ass      ir ao estado 64
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 70
+
+
+estado 45
+
+    2 programa: ALGORITMO IDENT $@1 PTO_E_VIRG bloco_dec_func bloco_dec_var INICIO bloco_cmd . FIM
+
+    FIM  deslocar, e ir ao estado 89
+
+
+estado 46
+
+   40 bloco_cmd: list_cmd .
+
+    $padrão  reduzir usando a regra 40 (bloco_cmd)
+
+
+estado 47
+
+   44 exp: exp . VIRGULA exp_atrib
+   96 cmd_exp: exp . PTO_E_VIRG
+
+    PTO_E_VIRG  deslocar, e ir ao estado 90
+    VIRGULA     deslocar, e ir ao estado 91
+
+
+estado 48
+
+   43 exp: exp_atrib .
+   47 exp_atrib: exp_atrib . $@6 ATRIB_OP exp_or
+
+    ATRIB_OP  reduzir usando a regra 46 ($@6)
+    $padrão  reduzir usando a regra 43 (exp)
+
+    $@6  ir ao estado 92
+
+
+estado 49
+
+   45 exp_atrib: exp_or .
+   49 exp_or: exp_or . OU_OP exp_and
+
+    OU_OP  deslocar, e ir ao estado 93
+
+    $padrão  reduzir usando a regra 45 (exp_atrib)
+
+
+estado 50
+
+   48 exp_or: exp_and .
+   51 exp_and: exp_and . E_OP exp_igual
+
+    E_OP  deslocar, e ir ao estado 94
+
+    $padrão  reduzir usando a regra 48 (exp_or)
+
+
+estado 51
+
+   50 exp_and: exp_igual .
+   53 exp_igual: exp_igual . IGUAL_OP exp_rel
+   54          | exp_igual . DIF_OP exp_rel
+
+    IGUAL_OP  deslocar, e ir ao estado 95
+    DIF_OP    deslocar, e ir ao estado 96
+
+    $padrão  reduzir usando a regra 50 (exp_and)
+
+
+estado 52
+
+   52 exp_igual: exp_rel .
+   56 exp_rel: exp_rel . MAIOR_OP exp_adit
+   57        | exp_rel . MENOR_OP exp_adit
+   58        | exp_rel . GE_OP exp_adit
+   59        | exp_rel . LE_OP exp_adit
+
+    LE_OP     deslocar, e ir ao estado 97
+    GE_OP     deslocar, e ir ao estado 98
+    MENOR_OP  deslocar, e ir ao estado 99
+    MAIOR_OP  deslocar, e ir ao estado 100
+
+    $padrão  reduzir usando a regra 52 (exp_igual)
+
+
+estado 53
+
+   55 exp_rel: exp_adit .
+   61 exp_adit: exp_adit . MAIS_OP exp_mult
+   62         | exp_adit . MENOS_OP exp_mult
+
+    MENOS_OP  deslocar, e ir ao estado 101
+    MAIS_OP   deslocar, e ir ao estado 102
+
+    $padrão  reduzir usando a regra 55 (exp_rel)
+
+
+estado 54
+
+   60 exp_adit: exp_mult .
+   64 exp_mult: exp_mult . MULTI_OP exp_un
+   65         | exp_mult . DIV_OP exp_un
+   66         | exp_mult . MOD_OP exp_un
+
+    MULTI_OP  deslocar, e ir ao estado 103
+    DIV_OP    deslocar, e ir ao estado 104
+    MOD_OP    deslocar, e ir ao estado 105
+
+    $padrão  reduzir usando a regra 60 (exp_adit)
+
+
+estado 55
+
+   63 exp_mult: exp_un .
+
+    $padrão  reduzir usando a regra 63 (exp_mult)
+
+
+estado 56
+
+   67 exp_un: oper_unario . exp_prim
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_prim       ir ao estado 106
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 57
+
+   68 exp_un: exp_prim .
+
+    $padrão  reduzir usando a regra 68 (exp_un)
+
+
+estado 58
+
+   75 exp_prim: exp_prim_pura .
+
+    $padrão  reduzir usando a regra 75 (exp_prim)
+
+
+estado 59
+
+   76 exp_prim: func .
+
+    $padrão  reduzir usando a regra 76 (exp_prim)
+
+
+estado 60
+
+  113 cmd_ass: cmd_ret .
+
+    $padrão  reduzir usando a regra 113 (cmd_ass)
+
+
+estado 61
+
+  117 cmd_ass: cmd_brec .
+
+    $padrão  reduzir usando a regra 117 (cmd_ass)
+
+
+estado 62
+
+  112 cmd_ass: cmd_exp .
+
+    $padrão  reduzir usando a regra 112 (cmd_ass)
+
+
+estado 63
+
+   41 list_cmd: cmd .
+   42         | cmd . list_cmd
+
+    SE               deslocar, e ir ao estado 23
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    $padrão  reduzir usando a regra 41 (list_cmd)
+
+    list_cmd       ir ao estado 107
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd            ir ao estado 63
+    cmd_n_ass      ir ao estado 64
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 70
+
+
+estado 64
+
+   98 cmd: cmd_n_ass .
+
+    $padrão  reduzir usando a regra 98 (cmd)
+
+
+estado 65
+
+  111 cmd_ass: cmd_se .
+
+    $padrão  reduzir usando a regra 111 (cmd_ass)
+
+
+estado 66
+
+  114 cmd_ass: cmd_enquanto .
+
+    $padrão  reduzir usando a regra 114 (cmd_ass)
+
+
+estado 67
+
+  115 cmd_ass: cmd_para .
+
+    $padrão  reduzir usando a regra 115 (cmd_ass)
+
+
+estado 68
+
+  118 cmd_ass: cmd_fazer .
+
+    $padrão  reduzir usando a regra 118 (cmd_ass)
+
+
+estado 69
+
+  116 cmd_ass: cmd_chavear .
+
+    $padrão  reduzir usando a regra 116 (cmd_ass)
+
+
+estado 70
+
+   97 cmd: cmd_ass .
+
+    $padrão  reduzir usando a regra 97 (cmd)
+
+
+estado 71
+
+   23 arg_dec_func: IDENT . DOIS_PONTOS tipo_dado
+
+    DOIS_PONTOS  deslocar, e ir ao estado 108
+
+
+estado 72
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func . FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd FIM
+
+    FECHA_PARENT  deslocar, e ir ao estado 109
+
+
+estado 73
+
+   20 list_arg_dec_func: arg_dec_func .
+   21                  | arg_dec_func . VIRGULA list_arg_dec_func
+
+    VIRGULA  deslocar, e ir ao estado 110
+
+    $padrão  reduzir usando a regra 20 (list_arg_dec_func)
+
+
+estado 74
+
+   26 list_ident: IDENT $@5 . VIRGULA list_ident
+
+    VIRGULA  deslocar, e ir ao estado 111
+
+
+estado 75
+
+    5 bloco_dec_var: VARIAVEIS $@2 list_dec_var FIM_VARIAVEIS .
+
+    $padrão  reduzir usando a regra 5 (bloco_dec_var)
+
+
+estado 76
+
+    9 list_dec_var: dec_var list_dec_var .
+
+    $padrão  reduzir usando a regra 9 (list_dec_var)
+
+
+estado 77
+
+   10 dec_var: list_ident DOIS_PONTOS . tipo_dado PTO_E_VIRG
+   11        | list_ident DOIS_PONTOS . MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+   12        | list_ident DOIS_PONTOS . MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+
+    CARACTERE  deslocar, e ir ao estado 112
+    LITERAL    deslocar, e ir ao estado 113
+    MATRIZ     deslocar, e ir ao estado 114
+    LOGICO     deslocar, e ir ao estado 115
+    INTEIRO    deslocar, e ir ao estado 116
+    REAL       deslocar, e ir ao estado 117
+
+    tipo_dado  ir ao estado 118
+
+
+estado 78
+
+   44 exp: exp . VIRGULA exp_atrib
+   99 cmd_n_ass: SE exp . ENTAO cmd_ass
+  100 cmd_se: SE exp . ENTAO cmd_ass SENAO cmd_ass
+
+    ENTAO    deslocar, e ir ao estado 119
+    VIRGULA  deslocar, e ir ao estado 91
+
+
+estado 79
+
+   44 exp: exp . VIRGULA exp_atrib
+  102 cmd_para: PARA exp . DE exp ATE exp FACA cmd_ass
+
+    DE       deslocar, e ir ao estado 120
+    VIRGULA  deslocar, e ir ao estado 91
+
+
+estado 80
+
+   92 cmd_ret: RETORNE PTO_E_VIRG .
+
+    $padrão  reduzir usando a regra 92 (cmd_ret)
+
+
+estado 81
+
+   44 exp: exp . VIRGULA exp_atrib
+   94 cmd_ret: RETORNE exp . $@9 PTO_E_VIRG
+
+    VIRGULA  deslocar, e ir ao estado 91
+
+    $padrão  reduzir usando a regra 93 ($@9)
+
+    $@9  ir ao estado 121
+
+
+estado 82
+
+   44 exp: exp . VIRGULA exp_atrib
+  101 cmd_enquanto: ENQUANTO exp . FACA cmd_ass
+
+    FACA     deslocar, e ir ao estado 122
+    VIRGULA  deslocar, e ir ao estado 91
+
+
+estado 83
+
+  110 cmd_ass: ABRE_BLOCO bloco_cmd . FECHA_BLOCO
+
+    FECHA_BLOCO  deslocar, e ir ao estado 123
+
+
+estado 84
+
+   44 exp: exp . VIRGULA exp_atrib
+   82 exp_prim_pura: ABRE_PARENT exp . FECHA_PARENT
+
+    VIRGULA       deslocar, e ir ao estado 91
+    FECHA_PARENT  deslocar, e ir ao estado 124
+
+
+estado 85
+
+   89 func: IDENT $@8 . chamada_func
+
+    ABRE_PARENT  deslocar, e ir ao estado 125
+
+    chamada_func  ir ao estado 126
+
+
+estado 86
+
+  105 cmd_chavear: CHAVEAR IDENT . $@10 ABRE_BLOCO lista_casos_chavear caso_padrao FECHA_BLOCO
+
+    $padrão  reduzir usando a regra 104 ($@10)
+
+    $@10  ir ao estado 127
+
+
+estado 87
+
+   95 cmd_brec: BRECAR PTO_E_VIRG .
+
+    $padrão  reduzir usando a regra 95 (cmd_brec)
+
+
+estado 88
+
+  103 cmd_fazer: FAZER cmd . ENQUANTO exp PTO_E_VIRG
+
+    ENQUANTO  deslocar, e ir ao estado 128
+
+
+estado 89
+
+    2 programa: ALGORITMO IDENT $@1 PTO_E_VIRG bloco_dec_func bloco_dec_var INICIO bloco_cmd FIM .
+
+    $padrão  reduzir usando a regra 2 (programa)
+
+
+estado 90
+
+   96 cmd_exp: exp PTO_E_VIRG .
+
+    $padrão  reduzir usando a regra 96 (cmd_exp)
+
+
+estado 91
+
+   44 exp: exp VIRGULA . exp_atrib
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_atrib      ir ao estado 129
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 92
+
+   47 exp_atrib: exp_atrib $@6 . ATRIB_OP exp_or
+
+    ATRIB_OP  deslocar, e ir ao estado 130
+
+
+estado 93
+
+   49 exp_or: exp_or OU_OP . exp_and
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_and        ir ao estado 131
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 94
+
+   51 exp_and: exp_and E_OP . exp_igual
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_igual      ir ao estado 132
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 95
+
+   53 exp_igual: exp_igual IGUAL_OP . exp_rel
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_rel        ir ao estado 133
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 96
+
+   54 exp_igual: exp_igual DIF_OP . exp_rel
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_rel        ir ao estado 134
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 97
+
+   59 exp_rel: exp_rel LE_OP . exp_adit
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_adit       ir ao estado 135
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 98
+
+   58 exp_rel: exp_rel GE_OP . exp_adit
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_adit       ir ao estado 136
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 99
+
+   57 exp_rel: exp_rel MENOR_OP . exp_adit
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_adit       ir ao estado 137
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 100
+
+   56 exp_rel: exp_rel MAIOR_OP . exp_adit
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_adit       ir ao estado 138
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 101
+
+   62 exp_adit: exp_adit MENOS_OP . exp_mult
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_mult       ir ao estado 139
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 102
+
+   61 exp_adit: exp_adit MAIS_OP . exp_mult
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_mult       ir ao estado 140
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 103
+
+   64 exp_mult: exp_mult MULTI_OP . exp_un
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_un         ir ao estado 141
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 104
+
+   65 exp_mult: exp_mult DIV_OP . exp_un
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_un         ir ao estado 142
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 105
+
+   66 exp_mult: exp_mult MOD_OP . exp_un
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_un         ir ao estado 143
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 106
+
+   67 exp_un: oper_unario exp_prim .
+
+    $padrão  reduzir usando a regra 67 (exp_un)
+
+
+estado 107
+
+   42 list_cmd: cmd list_cmd .
+
+    $padrão  reduzir usando a regra 42 (list_cmd)
+
+
+estado 108
+
+   23 arg_dec_func: IDENT DOIS_PONTOS . tipo_dado
+
+    CARACTERE  deslocar, e ir ao estado 112
+    LITERAL    deslocar, e ir ao estado 113
+    LOGICO     deslocar, e ir ao estado 115
+    INTEIRO    deslocar, e ir ao estado 116
+    REAL       deslocar, e ir ao estado 117
+
+    tipo_dado  ir ao estado 144
+
+
+estado 109
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT . DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd FIM
+
+    DOIS_PONTOS  deslocar, e ir ao estado 145
+
+
+estado 110
+
+   21 list_arg_dec_func: arg_dec_func VIRGULA . list_arg_dec_func
+
+    IDENT  deslocar, e ir ao estado 71
+
+    $padrão  reduzir usando a regra 22 (arg_dec_func)
+
+    list_arg_dec_func  ir ao estado 146
+    arg_dec_func       ir ao estado 73
+
+
+estado 111
+
+   26 list_ident: IDENT $@5 VIRGULA . list_ident
+
+    IDENT  deslocar, e ir ao estado 19
+
+    list_ident  ir ao estado 147
+
+
+estado 112
+
+   29 tipo_dado: CARACTERE .
+
+    $padrão  reduzir usando a regra 29 (tipo_dado)
+
+
+estado 113
+
+   30 tipo_dado: LITERAL .
+
+    $padrão  reduzir usando a regra 30 (tipo_dado)
+
+
+estado 114
+
+   11 dec_var: list_ident DOIS_PONTOS MATRIZ . ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+   12        | list_ident DOIS_PONTOS MATRIZ . ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+
+    ABRE_COLCHE  deslocar, e ir ao estado 148
+
+
+estado 115
+
+   31 tipo_dado: LOGICO .
+
+    $padrão  reduzir usando a regra 31 (tipo_dado)
+
+
+estado 116
+
+   27 tipo_dado: INTEIRO .
+
+    $padrão  reduzir usando a regra 27 (tipo_dado)
+
+
+estado 117
+
+   28 tipo_dado: REAL .
+
+    $padrão  reduzir usando a regra 28 (tipo_dado)
+
+
+estado 118
+
+   10 dec_var: list_ident DOIS_PONTOS tipo_dado . PTO_E_VIRG
+
+    PTO_E_VIRG  deslocar, e ir ao estado 149
+
+
+estado 119
+
+   99 cmd_n_ass: SE exp ENTAO . cmd_ass
+  100 cmd_se: SE exp ENTAO . cmd_ass SENAO cmd_ass
+
+    SE               deslocar, e ir ao estado 150
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 151
+
+
+estado 120
+
+  102 cmd_para: PARA exp DE . exp ATE exp FACA cmd_ass
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp            ir ao estado 152
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 121
+
+   94 cmd_ret: RETORNE exp $@9 . PTO_E_VIRG
+
+    PTO_E_VIRG  deslocar, e ir ao estado 153
+
+
+estado 122
+
+  101 cmd_enquanto: ENQUANTO exp FACA . cmd_ass
+
+    SE               deslocar, e ir ao estado 150
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 154
+
+
+estado 123
+
+  110 cmd_ass: ABRE_BLOCO bloco_cmd FECHA_BLOCO .
+
+    $padrão  reduzir usando a regra 110 (cmd_ass)
+
+
+estado 124
+
+   82 exp_prim_pura: ABRE_PARENT exp FECHA_PARENT .
+
+    $padrão  reduzir usando a regra 82 (exp_prim_pura)
+
+
+estado 125
+
+   90 chamada_func: ABRE_PARENT . list_arg_chama_func FECHA_PARENT
+   91             | ABRE_PARENT . FECHA_PARENT
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    FECHA_PARENT     deslocar, e ir ao estado 155
+    IDENT            deslocar, e ir ao estado 156
+
+    exp_prim_pura        ir ao estado 157
+    list_arg_chama_func  ir ao estado 158
+
+
+estado 126
+
+   89 func: IDENT $@8 chamada_func .
+
+    $padrão  reduzir usando a regra 89 (func)
+
+
+estado 127
+
+  105 cmd_chavear: CHAVEAR IDENT $@10 . ABRE_BLOCO lista_casos_chavear caso_padrao FECHA_BLOCO
+
+    ABRE_BLOCO  deslocar, e ir ao estado 159
+
+
+estado 128
+
+  103 cmd_fazer: FAZER cmd ENQUANTO . exp PTO_E_VIRG
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp            ir ao estado 160
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 129
+
+   44 exp: exp VIRGULA exp_atrib .
+   47 exp_atrib: exp_atrib . $@6 ATRIB_OP exp_or
+
+    ATRIB_OP  reduzir usando a regra 46 ($@6)
+    $padrão  reduzir usando a regra 44 (exp)
+
+    $@6  ir ao estado 92
+
+
+estado 130
+
+   47 exp_atrib: exp_atrib $@6 ATRIB_OP . exp_or
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_or         ir ao estado 161
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 131
+
+   49 exp_or: exp_or OU_OP exp_and .
+   51 exp_and: exp_and . E_OP exp_igual
+
+    E_OP  deslocar, e ir ao estado 94
+
+    $padrão  reduzir usando a regra 49 (exp_or)
+
+
+estado 132
+
+   51 exp_and: exp_and E_OP exp_igual .
+   53 exp_igual: exp_igual . IGUAL_OP exp_rel
+   54          | exp_igual . DIF_OP exp_rel
+
+    IGUAL_OP  deslocar, e ir ao estado 95
+    DIF_OP    deslocar, e ir ao estado 96
+
+    $padrão  reduzir usando a regra 51 (exp_and)
+
+
+estado 133
+
+   53 exp_igual: exp_igual IGUAL_OP exp_rel .
+   56 exp_rel: exp_rel . MAIOR_OP exp_adit
+   57        | exp_rel . MENOR_OP exp_adit
+   58        | exp_rel . GE_OP exp_adit
+   59        | exp_rel . LE_OP exp_adit
+
+    LE_OP     deslocar, e ir ao estado 97
+    GE_OP     deslocar, e ir ao estado 98
+    MENOR_OP  deslocar, e ir ao estado 99
+    MAIOR_OP  deslocar, e ir ao estado 100
+
+    $padrão  reduzir usando a regra 53 (exp_igual)
+
+
+estado 134
+
+   54 exp_igual: exp_igual DIF_OP exp_rel .
+   56 exp_rel: exp_rel . MAIOR_OP exp_adit
+   57        | exp_rel . MENOR_OP exp_adit
+   58        | exp_rel . GE_OP exp_adit
+   59        | exp_rel . LE_OP exp_adit
+
+    LE_OP     deslocar, e ir ao estado 97
+    GE_OP     deslocar, e ir ao estado 98
+    MENOR_OP  deslocar, e ir ao estado 99
+    MAIOR_OP  deslocar, e ir ao estado 100
+
+    $padrão  reduzir usando a regra 54 (exp_igual)
+
+
+estado 135
+
+   59 exp_rel: exp_rel LE_OP exp_adit .
+   61 exp_adit: exp_adit . MAIS_OP exp_mult
+   62         | exp_adit . MENOS_OP exp_mult
+
+    MENOS_OP  deslocar, e ir ao estado 101
+    MAIS_OP   deslocar, e ir ao estado 102
+
+    $padrão  reduzir usando a regra 59 (exp_rel)
+
+
+estado 136
+
+   58 exp_rel: exp_rel GE_OP exp_adit .
+   61 exp_adit: exp_adit . MAIS_OP exp_mult
+   62         | exp_adit . MENOS_OP exp_mult
+
+    MENOS_OP  deslocar, e ir ao estado 101
+    MAIS_OP   deslocar, e ir ao estado 102
+
+    $padrão  reduzir usando a regra 58 (exp_rel)
+
+
+estado 137
+
+   57 exp_rel: exp_rel MENOR_OP exp_adit .
+   61 exp_adit: exp_adit . MAIS_OP exp_mult
+   62         | exp_adit . MENOS_OP exp_mult
+
+    MENOS_OP  deslocar, e ir ao estado 101
+    MAIS_OP   deslocar, e ir ao estado 102
+
+    $padrão  reduzir usando a regra 57 (exp_rel)
+
+
+estado 138
+
+   56 exp_rel: exp_rel MAIOR_OP exp_adit .
+   61 exp_adit: exp_adit . MAIS_OP exp_mult
+   62         | exp_adit . MENOS_OP exp_mult
+
+    MENOS_OP  deslocar, e ir ao estado 101
+    MAIS_OP   deslocar, e ir ao estado 102
+
+    $padrão  reduzir usando a regra 56 (exp_rel)
+
+
+estado 139
+
+   62 exp_adit: exp_adit MENOS_OP exp_mult .
+   64 exp_mult: exp_mult . MULTI_OP exp_un
+   65         | exp_mult . DIV_OP exp_un
+   66         | exp_mult . MOD_OP exp_un
+
+    MULTI_OP  deslocar, e ir ao estado 103
+    DIV_OP    deslocar, e ir ao estado 104
+    MOD_OP    deslocar, e ir ao estado 105
+
+    $padrão  reduzir usando a regra 62 (exp_adit)
+
+
+estado 140
+
+   61 exp_adit: exp_adit MAIS_OP exp_mult .
+   64 exp_mult: exp_mult . MULTI_OP exp_un
+   65         | exp_mult . DIV_OP exp_un
+   66         | exp_mult . MOD_OP exp_un
+
+    MULTI_OP  deslocar, e ir ao estado 103
+    DIV_OP    deslocar, e ir ao estado 104
+    MOD_OP    deslocar, e ir ao estado 105
+
+    $padrão  reduzir usando a regra 61 (exp_adit)
+
+
+estado 141
+
+   64 exp_mult: exp_mult MULTI_OP exp_un .
+
+    $padrão  reduzir usando a regra 64 (exp_mult)
+
+
+estado 142
+
+   65 exp_mult: exp_mult DIV_OP exp_un .
+
+    $padrão  reduzir usando a regra 65 (exp_mult)
+
+
+estado 143
+
+   66 exp_mult: exp_mult MOD_OP exp_un .
+
+    $padrão  reduzir usando a regra 66 (exp_mult)
+
+
+estado 144
+
+   23 arg_dec_func: IDENT DOIS_PONTOS tipo_dado .
+
+    $padrão  reduzir usando a regra 23 (arg_dec_func)
+
+
+estado 145
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS . tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd FIM
+
+    CARACTERE  deslocar, e ir ao estado 112
+    LITERAL    deslocar, e ir ao estado 113
+    LOGICO     deslocar, e ir ao estado 115
+    INTEIRO    deslocar, e ir ao estado 116
+    REAL       deslocar, e ir ao estado 117
+    VAZIO      deslocar, e ir ao estado 162
+
+    tipo_dado  ir ao estado 163
+    tipo_ret   ir ao estado 164
+
+
+estado 146
+
+   21 list_arg_dec_func: arg_dec_func VIRGULA list_arg_dec_func .
+
+    $padrão  reduzir usando a regra 21 (list_arg_dec_func)
+
+
+estado 147
+
+   26 list_ident: IDENT $@5 VIRGULA list_ident .
+
+    $padrão  reduzir usando a regra 26 (list_ident)
+
+
+estado 148
+
+   11 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE . CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+   12        | list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE . CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+
+    CONST_INTEIRO  deslocar, e ir ao estado 165
+
+
+estado 149
+
+   10 dec_var: list_ident DOIS_PONTOS tipo_dado PTO_E_VIRG .
+
+    $padrão  reduzir usando a regra 10 (dec_var)
+
+
+estado 150
+
+  100 cmd_se: SE . exp ENTAO cmd_ass SENAO cmd_ass
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp            ir ao estado 166
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 151
+
+   99 cmd_n_ass: SE exp ENTAO cmd_ass .
+  100 cmd_se: SE exp ENTAO cmd_ass . SENAO cmd_ass
+
+    SENAO  deslocar, e ir ao estado 167
+
+    $padrão  reduzir usando a regra 99 (cmd_n_ass)
+
+
+estado 152
+
+   44 exp: exp . VIRGULA exp_atrib
+  102 cmd_para: PARA exp DE exp . ATE exp FACA cmd_ass
+
+    ATE      deslocar, e ir ao estado 168
+    VIRGULA  deslocar, e ir ao estado 91
+
+
+estado 153
+
+   94 cmd_ret: RETORNE exp $@9 PTO_E_VIRG .
+
+    $padrão  reduzir usando a regra 94 (cmd_ret)
+
+
+estado 154
+
+  101 cmd_enquanto: ENQUANTO exp FACA cmd_ass .
+
+    $padrão  reduzir usando a regra 101 (cmd_enquanto)
+
+
+estado 155
+
+   91 chamada_func: ABRE_PARENT FECHA_PARENT .
+
+    $padrão  reduzir usando a regra 91 (chamada_func)
+
+
+estado 156
+
+   77 exp_prim_pura: IDENT .
+
+    $padrão  reduzir usando a regra 77 (exp_prim_pura)
+
+
+estado 157
+
+   85 list_arg_chama_func: exp_prim_pura .
+   87                    | exp_prim_pura . VIRGULA $@7 list_arg_chama_func
+
+    VIRGULA  deslocar, e ir ao estado 169
+
+    $padrão  reduzir usando a regra 85 (list_arg_chama_func)
+
+
+estado 158
+
+   90 chamada_func: ABRE_PARENT list_arg_chama_func . FECHA_PARENT
+
+    FECHA_PARENT  deslocar, e ir ao estado 170
+
+
+estado 159
+
+  105 cmd_chavear: CHAVEAR IDENT $@10 ABRE_BLOCO . lista_casos_chavear caso_padrao FECHA_BLOCO
+
+    CASO  deslocar, e ir ao estado 171
+
+    lista_casos_chavear  ir ao estado 172
+    caso_chavear         ir ao estado 173
+
+
+estado 160
+
+   44 exp: exp . VIRGULA exp_atrib
+  103 cmd_fazer: FAZER cmd ENQUANTO exp . PTO_E_VIRG
+
+    PTO_E_VIRG  deslocar, e ir ao estado 174
+    VIRGULA     deslocar, e ir ao estado 91
+
+
+estado 161
+
+   47 exp_atrib: exp_atrib $@6 ATRIB_OP exp_or .
+   49 exp_or: exp_or . OU_OP exp_and
+
+    OU_OP  deslocar, e ir ao estado 93
+
+    $padrão  reduzir usando a regra 47 (exp_atrib)
+
+
+estado 162
+
+   37 tipo_ret: VAZIO .
+
+    $padrão  reduzir usando a regra 37 (tipo_ret)
+
+
+estado 163
+
+   38 tipo_ret: tipo_dado .
+
+    $padrão  reduzir usando a regra 38 (tipo_ret)
+
+
+estado 164
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret . $@4 list_dec_var_locais INICIO bloco_cmd FIM
+
+    $padrão  reduzir usando a regra 18 ($@4)
+
+    $@4  ir ao estado 175
+
+
+estado 165
+
+   11 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO . FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+   12        | list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO . FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+
+    FECHA_COLCHE  deslocar, e ir ao estado 176
+
+
+estado 166
+
+   44 exp: exp . VIRGULA exp_atrib
+  100 cmd_se: SE exp . ENTAO cmd_ass SENAO cmd_ass
+
+    ENTAO    deslocar, e ir ao estado 177
+    VIRGULA  deslocar, e ir ao estado 91
+
+
+estado 167
+
+  100 cmd_se: SE exp ENTAO cmd_ass SENAO . cmd_ass
+
+    SE               deslocar, e ir ao estado 150
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 178
+
+
+estado 168
+
+  102 cmd_para: PARA exp DE exp ATE . exp FACA cmd_ass
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp            ir ao estado 179
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 169
+
+   87 list_arg_chama_func: exp_prim_pura VIRGULA . $@7 list_arg_chama_func
+
+    $padrão  reduzir usando a regra 86 ($@7)
+
+    $@7  ir ao estado 180
+
+
+estado 170
+
+   90 chamada_func: ABRE_PARENT list_arg_chama_func FECHA_PARENT .
+
+    $padrão  reduzir usando a regra 90 (chamada_func)
+
+
+estado 171
+
+  108 caso_chavear: CASO . exp_prim DOIS_PONTOS bloco_cmd
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+
+    exp_prim       ir ao estado 181
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+
+
+estado 172
+
+  105 cmd_chavear: CHAVEAR IDENT $@10 ABRE_BLOCO lista_casos_chavear . caso_padrao FECHA_BLOCO
+
+    PADRAO  deslocar, e ir ao estado 182
+
+    caso_padrao  ir ao estado 183
+
+
+estado 173
+
+  106 lista_casos_chavear: caso_chavear .
+  107                    | caso_chavear . lista_casos_chavear
+
+    CASO  deslocar, e ir ao estado 171
+
+    $padrão  reduzir usando a regra 106 (lista_casos_chavear)
+
+    lista_casos_chavear  ir ao estado 184
+    caso_chavear         ir ao estado 173
+
+
+estado 174
+
+  103 cmd_fazer: FAZER cmd ENQUANTO exp PTO_E_VIRG .
+
+    $padrão  reduzir usando a regra 103 (cmd_fazer)
+
+
+estado 175
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 . list_dec_var_locais INICIO bloco_cmd FIM
+
+    IDENT  deslocar, e ir ao estado 19
+
+    $padrão  reduzir usando a regra 6 (list_dec_var_locais)
+
+    list_dec_var_locais  ir ao estado 185
+    list_dec_var         ir ao estado 186
+    dec_var              ir ao estado 21
+    list_ident           ir ao estado 22
+
+
+estado 176
+
+   11 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE . DE tipo_dado_mat PTO_E_VIRG
+   12        | list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE . ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+
+    DE           deslocar, e ir ao estado 187
+    ABRE_COLCHE  deslocar, e ir ao estado 188
+
+
+estado 177
+
+  100 cmd_se: SE exp ENTAO . cmd_ass SENAO cmd_ass
+
+    SE               deslocar, e ir ao estado 150
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 189
+
+
+estado 178
+
+  100 cmd_se: SE exp ENTAO cmd_ass SENAO cmd_ass .
+
+    $padrão  reduzir usando a regra 100 (cmd_se)
+
+
+estado 179
+
+   44 exp: exp . VIRGULA exp_atrib
+  102 cmd_para: PARA exp DE exp ATE exp . FACA cmd_ass
+
+    FACA     deslocar, e ir ao estado 190
+    VIRGULA  deslocar, e ir ao estado 91
+
+
+estado 180
+
+   87 list_arg_chama_func: exp_prim_pura VIRGULA $@7 . list_arg_chama_func
+
+    LITERAL          deslocar, e ir ao estado 24
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 156
+
+    exp_prim_pura        ir ao estado 157
+    list_arg_chama_func  ir ao estado 191
+
+
+estado 181
+
+  108 caso_chavear: CASO exp_prim . DOIS_PONTOS bloco_cmd
+
+    DOIS_PONTOS  deslocar, e ir ao estado 192
+
+
+estado 182
+
+  109 caso_padrao: PADRAO . DOIS_PONTOS bloco_cmd
+
+    DOIS_PONTOS  deslocar, e ir ao estado 193
+
+
+estado 183
+
+  105 cmd_chavear: CHAVEAR IDENT $@10 ABRE_BLOCO lista_casos_chavear caso_padrao . FECHA_BLOCO
+
+    FECHA_BLOCO  deslocar, e ir ao estado 194
+
+
+estado 184
+
+  107 lista_casos_chavear: caso_chavear lista_casos_chavear .
+
+    $padrão  reduzir usando a regra 107 (lista_casos_chavear)
+
+
+estado 185
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais . INICIO bloco_cmd FIM
+
+    INICIO  deslocar, e ir ao estado 195
+
+
+estado 186
+
+    7 list_dec_var_locais: list_dec_var .
+
+    $padrão  reduzir usando a regra 7 (list_dec_var_locais)
+
+
+estado 187
+
+   11 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE . tipo_dado_mat PTO_E_VIRG
+
+    LITERAIS    deslocar, e ir ao estado 196
+    LOGICOS     deslocar, e ir ao estado 197
+    INTEIROS    deslocar, e ir ao estado 198
+    REAIS       deslocar, e ir ao estado 199
+    CARACTERES  deslocar, e ir ao estado 200
+
+    tipo_dado_mat  ir ao estado 201
+
+
+estado 188
+
+   12 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE . CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+
+    CONST_INTEIRO  deslocar, e ir ao estado 202
+
+
+estado 189
+
+  100 cmd_se: SE exp ENTAO cmd_ass . SENAO cmd_ass
+
+    SENAO  deslocar, e ir ao estado 167
+
+
+estado 190
+
+  102 cmd_para: PARA exp DE exp ATE exp FACA . cmd_ass
+
+    SE               deslocar, e ir ao estado 150
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 203
+
+
+estado 191
+
+   87 list_arg_chama_func: exp_prim_pura VIRGULA $@7 list_arg_chama_func .
+
+    $padrão  reduzir usando a regra 87 (list_arg_chama_func)
+
+
+estado 192
+
+  108 caso_chavear: CASO exp_prim DOIS_PONTOS . bloco_cmd
+
+    SE               deslocar, e ir ao estado 23
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    $padrão  reduzir usando a regra 39 (bloco_cmd)
+
+    bloco_cmd      ir ao estado 204
+    list_cmd       ir ao estado 46
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd            ir ao estado 63
+    cmd_n_ass      ir ao estado 64
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 70
+
+
+estado 193
+
+  109 caso_padrao: PADRAO DOIS_PONTOS . bloco_cmd
+
+    SE               deslocar, e ir ao estado 23
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    $padrão  reduzir usando a regra 39 (bloco_cmd)
+
+    bloco_cmd      ir ao estado 205
+    list_cmd       ir ao estado 46
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd            ir ao estado 63
+    cmd_n_ass      ir ao estado 64
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 70
+
+
+estado 194
+
+  105 cmd_chavear: CHAVEAR IDENT $@10 ABRE_BLOCO lista_casos_chavear caso_padrao FECHA_BLOCO .
+
+    $padrão  reduzir usando a regra 105 (cmd_chavear)
+
+
+estado 195
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO . bloco_cmd FIM
+
+    SE               deslocar, e ir ao estado 23
+    LITERAL          deslocar, e ir ao estado 24
+    PARA             deslocar, e ir ao estado 25
+    RETORNE          deslocar, e ir ao estado 26
+    ENQUANTO         deslocar, e ir ao estado 27
+    VERDADEIRO       deslocar, e ir ao estado 28
+    FALSO            deslocar, e ir ao estado 29
+    CONST_INTEIRO    deslocar, e ir ao estado 30
+    CONST_REAL       deslocar, e ir ao estado 31
+    CONST_CARACTERE  deslocar, e ir ao estado 32
+    MENOS_OP         deslocar, e ir ao estado 33
+    XOR_BIT_OP       deslocar, e ir ao estado 34
+    NOT_BIT_OP       deslocar, e ir ao estado 35
+    AND_BIT_OP       deslocar, e ir ao estado 36
+    OR_BIT_OP        deslocar, e ir ao estado 37
+    NAO_OP           deslocar, e ir ao estado 38
+    ABRE_BLOCO       deslocar, e ir ao estado 39
+    ABRE_PARENT      deslocar, e ir ao estado 40
+    IDENT            deslocar, e ir ao estado 41
+    CHAVEAR          deslocar, e ir ao estado 42
+    BRECAR           deslocar, e ir ao estado 43
+    FAZER            deslocar, e ir ao estado 44
+
+    $padrão  reduzir usando a regra 39 (bloco_cmd)
+
+    bloco_cmd      ir ao estado 206
+    list_cmd       ir ao estado 46
+    exp            ir ao estado 47
+    exp_atrib      ir ao estado 48
+    exp_or         ir ao estado 49
+    exp_and        ir ao estado 50
+    exp_igual      ir ao estado 51
+    exp_rel        ir ao estado 52
+    exp_adit       ir ao estado 53
+    exp_mult       ir ao estado 54
+    exp_un         ir ao estado 55
+    oper_unario    ir ao estado 56
+    exp_prim       ir ao estado 57
+    exp_prim_pura  ir ao estado 58
+    func           ir ao estado 59
+    cmd_ret        ir ao estado 60
+    cmd_brec       ir ao estado 61
+    cmd_exp        ir ao estado 62
+    cmd            ir ao estado 63
+    cmd_n_ass      ir ao estado 64
+    cmd_se         ir ao estado 65
+    cmd_enquanto   ir ao estado 66
+    cmd_para       ir ao estado 67
+    cmd_fazer      ir ao estado 68
+    cmd_chavear    ir ao estado 69
+    cmd_ass        ir ao estado 70
+
+
+estado 196
+
+   35 tipo_dado_mat: LITERAIS .
+
+    $padrão  reduzir usando a regra 35 (tipo_dado_mat)
+
+
+estado 197
+
+   36 tipo_dado_mat: LOGICOS .
+
+    $padrão  reduzir usando a regra 36 (tipo_dado_mat)
+
+
+estado 198
+
+   32 tipo_dado_mat: INTEIROS .
+
+    $padrão  reduzir usando a regra 32 (tipo_dado_mat)
+
+
+estado 199
+
+   33 tipo_dado_mat: REAIS .
+
+    $padrão  reduzir usando a regra 33 (tipo_dado_mat)
+
+
+estado 200
+
+   34 tipo_dado_mat: CARACTERES .
+
+    $padrão  reduzir usando a regra 34 (tipo_dado_mat)
+
+
+estado 201
+
+   11 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat . PTO_E_VIRG
+
+    PTO_E_VIRG  deslocar, e ir ao estado 207
+
+
+estado 202
+
+   12 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO . FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG
+
+    FECHA_COLCHE  deslocar, e ir ao estado 208
+
+
+estado 203
+
+  102 cmd_para: PARA exp DE exp ATE exp FACA cmd_ass .
+
+    $padrão  reduzir usando a regra 102 (cmd_para)
+
+
+estado 204
+
+  108 caso_chavear: CASO exp_prim DOIS_PONTOS bloco_cmd .
+
+    $padrão  reduzir usando a regra 108 (caso_chavear)
+
+
+estado 205
+
+  109 caso_padrao: PADRAO DOIS_PONTOS bloco_cmd .
+
+    $padrão  reduzir usando a regra 109 (caso_padrao)
+
+
+estado 206
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd . FIM
+
+    FIM  deslocar, e ir ao estado 209
+
+
+estado 207
+
+   11 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG .
+
+    $padrão  reduzir usando a regra 11 (dec_var)
+
+
+estado 208
+
+   12 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE . DE tipo_dado_mat PTO_E_VIRG
+
+    DE  deslocar, e ir ao estado 210
+
+
+estado 209
+
+   19 dec_func: FUNCAO IDENT $@3 ABRE_PARENT list_arg_dec_func FECHA_PARENT DOIS_PONTOS tipo_ret $@4 list_dec_var_locais INICIO bloco_cmd FIM .
+
+    $padrão  reduzir usando a regra 19 (dec_func)
+
+
+estado 210
+
+   12 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE . tipo_dado_mat PTO_E_VIRG
+
+    LITERAIS    deslocar, e ir ao estado 196
+    LOGICOS     deslocar, e ir ao estado 197
+    INTEIROS    deslocar, e ir ao estado 198
+    REAIS       deslocar, e ir ao estado 199
+    CARACTERES  deslocar, e ir ao estado 200
+
+    tipo_dado_mat  ir ao estado 211
+
+
+estado 211
+
+   12 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat . PTO_E_VIRG
+
+    PTO_E_VIRG  deslocar, e ir ao estado 212
+
+
+estado 212
+
+   12 dec_var: list_ident DOIS_PONTOS MATRIZ ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE ABRE_COLCHE CONST_INTEIRO FECHA_COLCHE DE tipo_dado_mat PTO_E_VIRG .
+
+    $padrão  reduzir usando a regra 12 (dec_var)

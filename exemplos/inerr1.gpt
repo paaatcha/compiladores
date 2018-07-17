@@ -1,0 +1,17 @@
+algoritmo inerr1;
+
+variáveis
+	x	: inteiro;
+fim-variáveis
+
+início
+
+	x := 1;
+	se x = 1 // falta o então
+		x := 3;
+	senão
+		x := 6;
+	
+	escreva(x);
+fim
+

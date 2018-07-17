@@ -1,0 +1,19 @@
+algoritmo in5;
+
+função avalia (x: inteiro) : vazio
+início
+	escreva_ln("oi");
+fim
+
+
+variáveis
+	y	: inteiro;
+	z   : lógico;
+fim-variáveis
+
+início
+	y := 0;
+	avalia (y);
+	escreva(z);
+fim
+

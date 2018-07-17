@@ -1,0 +1,19 @@
+algoritmo inerr9;
+
+função fazNada () : inteiro // tipo de retorno incompatível
+início
+	retorne verdadeiro
+fim
+
+
+variáveis
+	y	: inteiro;
+	z   : lógico;
+fim-variáveis
+
+início
+	y := 0;
+	z := avalia (y);
+	escreva(z);
+fim
+

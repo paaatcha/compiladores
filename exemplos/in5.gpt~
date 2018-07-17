@@ -1,0 +1,15 @@
+algoritmo in5;
+
+início
+	y := 0;
+	z := avalia (y);
+	escreva(z);
+fim
+		
+	x := 4;	
+	enquanto verdadeiro faça{
+		x := x + 1;
+		se x = 8 então
+			brecar;		
+	}
+fim
